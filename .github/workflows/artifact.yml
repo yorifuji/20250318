@@ -1,0 +1,55 @@
+name: test
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        type: choice
+        description: Bump Target
+        options:
+          - build
+          - patch
+          - minor
+          - major
+
+env:
+  GIT_USER_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
+  GIT_USER_NAME: "github-actions[bot]"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash -euo pipefail {0}
+
+jobs:
+  upload:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - run: mkdir -p path/to/artifact
+      - run: echo hello > path/to/artifact/world.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: my-artifact
+          path: path/to/artifact/world.txt
+
+  download:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write
+      pull-requests: write
+    needs: download
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: my-artifact
+          path: path/to/artifact
+      - name: Display structure of downloaded files
+        run: ls -lR path/to/artifact
