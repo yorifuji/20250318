@@ -45,7 +45,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    needs: download
+    needs: upload
     steps:
       - uses: actions/download-artifact@v4
         with:
